@@ -9,8 +9,8 @@ module.exports = {
 	context: path.join( __dirname, "demo" ),
 	entry: "./scripts/index.ts",
 	output: {
-		path: "/dist",
-		publicPath: "/dist",
+		path: path.join( __dirname, "demo/dist" ),
+		publicPath: "/dist/",
 		filename: "demo.js",
 		libraryTarget: "umd",
 		sourcePrefix: ''
@@ -60,18 +60,23 @@ module.exports = {
 	},
 	plugins: [
 		new CopyWebpackPlugin( [ {
-			from: path.join( __dirname, cesiumSource, 'Workers' ),
-			to: path.join( __dirname, 'demo/Workers' )
-		}, {
-			from: path.join( __dirname, cesiumSource, 'Assets' ),
-			to: path.join( __dirname, 'demo/Assets' )
-		}, {
-			from: path.join( __dirname, cesiumSource, 'Widgets' ),
-			to: path.join( __dirname, 'demo/Widgets' )
-		}, {
-			from: path.join( __dirname, cesiumSource, 'ThirdParty' ),
-			to: path.join( __dirname, 'demo/ThirdParty' )
-		} ] ),
+				from: path.join( __dirname, cesiumSource, 'Workers' ),
+				to: path.join( __dirname, 'demo/Workers' )
+			}, {
+				from: path.join( __dirname, cesiumSource, 'Assets' ),
+				to: path.join( __dirname, 'demo/Assets' )
+			}, {
+				from: path.join( __dirname, cesiumSource, 'Widgets' ),
+				to: path.join( __dirname, 'demo/Widgets' )
+			}, {
+				from: path.join( __dirname, cesiumSource, 'ThirdParty' ),
+				to: path.join( __dirname, 'demo/ThirdParty' )
+			},
+			{
+				from: path.join( __dirname, 'app/assets/fonts' ),
+				to: path.join( __dirname, 'demo/fonts' )
+			}
+		] ),
 		new webpack.DefinePlugin( {
 			CESIUM_BASE_URL: JSON.stringify( '/' )
 		} )

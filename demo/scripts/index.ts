@@ -8,7 +8,7 @@ import { MapBoxApplication } from "./MapBoxApplication";
 import { MapType } from "../../app/src/modules/MapType";
 
 $(document).ready(() => {
-	let mapType: string = location.hash.split("map=")[1];
+	let mapType: string = location.search.split("map=")[1];
 	let app: Application;
 	switch (mapType) {
 		case "leaflet":

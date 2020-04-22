@@ -144,7 +144,6 @@ export class MapBoxComponent extends MapComponent {
 			style: MapBoxWmsProvider.getWmsStyle(this.config.baseWmsUrl,
 				[this.config.wmsLayers], "main-layer")
 		};
-		(mapboxgl as any).accessToken = "pk.eyJ1IjoiZWxhZC1zaGVjaHRlciIsImEiOiJjazd2a3dla24xOWdiM2VuMTRicnM0dGt6In0.ryRmPDkEFHEfMcuPHJQGlQ";
 		mapboxgl.setRTLTextPlugin(mapboxgl_rtl_text, null, false);
 		this.map = new mapboxgl.Map(mapOptions);
 

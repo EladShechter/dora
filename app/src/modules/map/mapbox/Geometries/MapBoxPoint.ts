@@ -190,7 +190,7 @@ export class MapBoxPoint extends Point {
 	private renderLabel(labelDesign: ILabelDesign, iconProperties: { iconSize: size, iconAnchor: position; }) {
 		if (labelDesign.text && labelDesign.visibility) {
 			this.mapComponent.nativeMapInstance
-				.setLayoutProperty(this.geometryOnMap.id, "text-font", ["Open Sans Regular", "Arial Unicode MS Regular"]);
+				.setLayoutProperty(this.geometryOnMap.id, "text-font", ["Klokantech Noto Sans Regular"]);
 			this.setLabel(labelDesign.text);
 			this.setLabelOpacity(labelDesign.opacity);
 			this.setLabelSize(labelDesign.fontSize);

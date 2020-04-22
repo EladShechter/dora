@@ -1,31 +1,31 @@
 import * as mapboxgl from "mapbox-gl";
 export class MapBoxWmsProvider {
-    public static getWmsStyle(
-        baseWmsUrl: string,
-        wmsLayers: string[],
-        layerAndSourceId: string): mapboxgl.Style {
+	public static getWmsStyle(
+		baseWmsUrl: string,
+		wmsLayers: string[],
+		layerAndSourceId: string): mapboxgl.Style {
 
-        return {
+		return {
 			version: 8,
 			sources: {
 				[layerAndSourceId]: this.getWmsSource(baseWmsUrl, wmsLayers)
 			},
 			layers: [
 				this.getWmsLayer(layerAndSourceId, layerAndSourceId)
-            ],
-            glyphs: "mapbox://fonts/mapbox/{fontstack}/{range}.pbf"
+			],
+			glyphs: "/fonts/{fontstack}/{range}.pbf"
 		};
-    }
+	}
 
-    public static addWmsLayer(
-        map: mapboxgl.Map,
-        baseWmsUrl: string,
-        wmsLayers: string[],
-        layerAndSourceId: string) {
+	public static addWmsLayer(
+		map: mapboxgl.Map,
+		baseWmsUrl: string,
+		wmsLayers: string[],
+		layerAndSourceId: string) {
 
 		map.addSource(layerAndSourceId, this.getWmsSource(baseWmsUrl, wmsLayers));
 		map.addLayer(this.getWmsLayer(layerAndSourceId, layerAndSourceId));
-    }
+	}
 
 	private static getWmsSource(baseWmsUrl: string, wmsLayers: string[]): mapboxgl.RasterSource {
 		const wmsParams = [
@@ -43,7 +43,7 @@ export class MapBoxWmsProvider {
 		const wmsParamsString = wmsParams.map(param => param.join("=")).join("&");
 		return {
 			type: "raster",
-			tiles: [ `${baseWmsUrl}?${wmsParamsString}`	],
+			tiles: [`${ baseWmsUrl }?${ wmsParamsString }`],
 			tileSize: 256
 		};
 	}

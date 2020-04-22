@@ -223,3 +223,6 @@ Workers/
 test_bundle/
 demo/dist/
 api_documentation/
+demo/fonts/
+demo/bundle/
+demo/dist /
