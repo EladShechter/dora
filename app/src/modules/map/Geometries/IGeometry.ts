@@ -8,6 +8,7 @@ import * as GeoJSON from "@turf/helpers/lib/geojson";
 export interface IGeometry {
 	geometryType: GEOMETRY_TYPES;
 
+	isOnMap: boolean;
 	/**
 	 * Adds the geometry to the map.
 	 */

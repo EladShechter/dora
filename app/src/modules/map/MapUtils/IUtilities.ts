@@ -11,9 +11,9 @@ export interface IUtilities {
 
 	entitiesAmountInPositionGreaterThan(eventArgs: MapEventArgs, num: number): boolean;
 
-	onMouseEvent(eventType: number, listener: (eventArgs?: MapEventArgs) => void): () => void;
+	onMouseEvent(eventType: number | string, listener: (eventArgs?: MapEventArgs) => void): () => void;
 
-	addEntityMouseEvent(listener: (eventArgs?: MapEventArgs) => void, eventType: number, entity): () => void;
+	addEntityMouseEvent(listener: (eventArgs?: MapEventArgs) => void, eventType: number | string, entity): () => void;
 
 	addEntityMouseOutEvent(listener: (eventArgs?: MapEventArgs) => void, eventType: number, entity): () => void;
 

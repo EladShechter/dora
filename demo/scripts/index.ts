@@ -4,9 +4,11 @@ import { Application } from "./Application";
 import { GEApplication } from "./GEApplication";
 import { GMApplication } from "./GMApplication";
 import * as $ from "jquery";
+import { MapBoxApplication } from "./MapBoxApplication";
+import { MapType } from "../../app/src/modules/MapType";
 
-$(document).ready( () => {
-	let mapType: string = location.search.split("map=")[1];
+$(document).ready(() => {
+	let mapType: string = location.hash.split("map=")[1];
 	let app: Application;
 	switch (mapType) {
 		case "leaflet":
@@ -20,6 +22,9 @@ $(document).ready( () => {
 			break;
 		case "cesium":
 			app = new CesiumApplication();
+			break;
+		case MapType.MAPBOX:
+			app = new MapBoxApplication();
 			break;
 		default:
 			alert("!!! !!! !! !!!!, !!! !!!!!! !! ! leaflet");

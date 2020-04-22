@@ -16,6 +16,7 @@ import { IArrowGeometryDesign } from "../../app/src/modules/map/GeometryDesign/I
 import { ArrowType } from "../../app/src/modules/map/GeometryDesign/Enums/ArrowType";
 import * as randomGeometry from "@turf/random";
 import { ILayer } from "../../app/src/modules/map/Layers/ILayer";
+import { ILayerChild } from "../../app/src/modules/map/Layers/ILayerChild";
 import { IKMLGeometryCollection } from "../../app/src/modules/map/Geometries/IKMLGeometryCollection";
 import { RasterLayer } from "../../app/src/modules/map/OverlayLayers/RasterLayer";
 import { Dictionary } from "underscore";
@@ -29,7 +30,8 @@ import { Polygon } from "../../app/src/modules/map/Geometries/Polygon";
 import { MapUtils } from "../../app/src/modules/map/MapUtils/MapUtils";
 import { IconRelativePosition } from "../../app/src/modules/map/GeometryDesign/Enums/IconRelativePosition";
 import { LabelRelativePosition } from "../../app/src/modules/map/GeometryDesign/Enums/LabelRelativePosition";
-import { MapType } from "@dora/map-types";
+import { MapType } from "../../app/src/modules/MapType";
+import { LinePatternName } from "../../app/src/dora-common";
 
 export class Application {
 	protected selectedGeometry: IGeometry = null;
@@ -38,14 +40,13 @@ export class Application {
 	protected measureActionToken: IActionToken = null;
 	protected mapComponent: IMapComponent;
 	private readonly defaultGeometryDesign: IGeometryDesign;
-	private layers: { [key: string]: ILayer } = {};
+	private layers: { [key: string]: ILayer; } = {};
 	private selectedLayers: string[] = ["map"];
 	private ctrlIsPressed: boolean = false;
 
 	constructor(mapComponent: IMapComponent) {
 		this.mapComponent = mapComponent;
-		this.layers.layer1 = this.mapComponent.geometryBuilder.buildLayer();
-		this.layers.layer2 = this.mapComponent.geometryBuilder.buildLayer();
+
 		this.defaultGeometryDesign = {};
 		this.defaultGeometryDesign.line = {
 			color: "#ff0000",
@@ -80,11 +81,13 @@ export class Application {
 
 	public load(): void {
 		this.mapComponent.load().then(() => {
-			this.mapComponent.controlBuilder.buildXXXTreeControl().addToMap();
+			this.layers.layer1 = this.mapComponent.geometryBuilder.buildLayer();
+			this.layers.layer2 = this.mapComponent.geometryBuilder.buildLayer();
+			// this.mapComponent.controlBuilder.buildXXXTreeControl().addToMap();
 		});
 
 		$(".maps-button button").on("click", (event) => {
-			location.search = `?map=${event.target.innerText}`;
+			location.search = `?map=${ event.target.innerText }`;
 		});
 
 		$(document).on("keydown", (e) => {
@@ -131,6 +134,14 @@ export class Application {
 
 		$("#removeShapeBtn").on("click", () => {
 			this.selectedGeometry.remove();
+		});
+
+		$("#removeShapeLayer1Btn").on("click", () => {
+			this.layers.layer1.removeGeometry(this.selectedGeometry);
+		});
+
+		$("#removeShapeLayer2Btn").on("click", () => {
+			this.layers.layer2.removeGeometry(this.selectedGeometry);
 		});
 
 		function listenGeometry(eventArgs: MapEventArgs) {
@@ -283,7 +294,7 @@ export class Application {
 				this.selectedLayers = [layerName];
 			}
 			this.selectedLayers.forEach(layer => {
-				$("#layersPanel").find(`.layer[data-name=${layer}]`).addClass("selected");
+				$("#layersPanel").find(`.layer[data-name=${ layer }]`).addClass("selected");
 			});
 		});
 
@@ -543,7 +554,7 @@ export class Application {
 				coordinate.latitude = lat;
 			}
 
-			let converted: { coordinate: Coordinate, zone: number } =
+			let converted: { coordinate: Coordinate, zone: number; } =
 				Geodesy.convertCoordinate(coordinate, projFrom, projTo, zoneFrom);
 
 			let outStr: string = "longitude: " +
@@ -664,7 +675,7 @@ export class Application {
 				let layersOnMap: Dictionary<RasterLayer> = {};
 				let raster: RasterLayer;
 
-				$("#rastersPanel").on("change", function () {
+				$("#rastersPanel").on("change", function() {
 					raster = _.findWhere(rasters,
 						{ "name": ($("option:selected", this))[0].textContent });
 
@@ -702,7 +713,7 @@ export class Application {
 						folder.appendChild(checkbox);
 						folder.appendChild(document.createTextNode(vector.name));
 
-						checkbox.addEventListener("change", async function () {
+						checkbox.addEventListener("change", async function() {
 							if (this.checked) {
 								if (vector.children) {
 									vector.children.forEach(async (child) => {
@@ -750,7 +761,7 @@ export class Application {
 								childCheckbox.setAttribute("type", "checkbox");
 								childCheckbox.setAttribute("id", "childCheckbox" + layer.id);
 
-								childCheckbox.addEventListener("change", async function () {
+								childCheckbox.addEventListener("change", async function() {
 									if (this.checked) {
 										try {
 											await layer.addToMap();

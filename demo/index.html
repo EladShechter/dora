@@ -5,16 +5,16 @@
     <meta charset="UTF-8">
     <title>MapService demo</title>
     <script>
-        function loadScript(url) {
-            document.write('<script src="' + url + '"></' + 'script>');
+        function loadScript( url ) {
+            document.write( '<script src="' + url + '"></' + 'script>' );
         }
 
-        const mapType = location.search.split("map=")[1];
+        const mapType = location.search.split( "map=" )[ 1 ];
 
-        if (mapType === "google-maps") {
+        if ( mapType === "google-maps" ) {
             var GEE_BASE_URL = "LINK";
             var GEE_SERVER_URL = GEE_BASE_URL + "/GeeProxy/PEIMAT_MIPUY/";
-            urls = ["LINK",
+            urls = [ "LINK",
                 "LINK",
                 "LINK",
                 "LINK",
@@ -24,8 +24,8 @@
                 "LINK"
             ];
 
-            for (var i = 0; i < urls.length; i++) {
-                loadScript(urls[i]);
+            for ( var i = 0; i < urls.length; i++ ) {
+                loadScript( urls[ i ] );
             }
         }
     </script>
@@ -34,128 +34,133 @@
 
 <body>
     <div id="controls">
-        <h2>!!!!</h2>
+        <h2>change map</h2>
         <div class="maps-button">
             <button>leaflet</button>
             <button>google-maps</button>
             <button>google-earth</button>
             <button>cesium</button>
+            <button>mapbox</button>
         </div>
         <br>
         *!!!! !!!! !! !!!! !!!! !!!!! !!!!!!!! !!!!!.
         <h2>!!!!!!!!!</h2>
         <div id="optionsPanel">
-            <h3>!!!!!!!! !!!!</h3>
-            <button id="startEditBtn">!!!! !!!!!!!!</button>
-            <button id="startDragBtn">!!!! !!!!!</button>
-            <button id="printGeoJSONBtn">!!!! GeoJSON</button>
+            <h3>geometry options</h3>
+            <button id="startEditBtn">start edit</button>
+            <button id="startDragBtn">start drag</button>
+            <button id="printGeoJSONBtn">print GeoJSON</button>
             <br><br>
-            <button id="listenGeometryClickEvent">!!!! !!!!!!</button>
-            <button id="listenGeometryContextMenuEvent">!!!! !!!!!!! !!!!!</button>
-            <button id="listenGeometryDbClickEvent">!!!! !!!!!! !!!!!</button>
-            <button id="listenGeometryMouseOverEvent">!!!! mouseover</button>
-            <button id="listenGeometryMouseOutEvent">!!!! mouseout</button>
+            <h5>Listen geometry events</h5>
+            <button id="listenGeometryClickEvent">Click</button>
+            <button id="listenGeometryContextMenuEvent">Right click</button>
+            <button id="listenGeometryDbClickEvent">Double click</button>
+            <button id="listenGeometryMouseOverEvent">Mouse over</button>
+            <button id="listenGeometryMouseOutEvent">Mouse out</button>
             <br><br>
-            <button id="focusViewBtn">!!!!!</button>
-            <button id="toggleShapeBtn">!!!!/!!!</button>
-            <button id="removeShapeBtn">!!!</button>
+            <button id="focusViewBtn">focus</button>
+            <button id="toggleShapeBtn">hide/show</button>
+            <button id="removeShapeBtn">remove shape</button>
+            <button id="removeShapeLayer1Btn">remove shape from layer 1</button>
+            <button id="removeShapeLayer2Btn">remove shape from layer 2</button>
             <br><br>
             <input class="shapeLabel" placeholder="!!!!">
-            <button id="setShapeLabelBtn">!!!! !!!!!</button>
-            <button id="getShapeLabelBtn">!!! !!!!!</button>
-            <button id="openShapeBalloonBtn">!!! !!!!</button><br><br>
+            <button id="setShapeLabelBtn">set shape label</button>
+            <button id="getShapeLabelBtn">get shape label</button>
+            <button id="openShapeBalloonBtn">open shape baloon</button><br><br>
             <input class="xCoordinate" placeholder="latitude">
             <input class="yCoordinate" placeholder="longitude">
-            <button id="checkIfPolygonContainPoint">!!!! !ם !!!!!!! !!!! !!!!!!!!</button><br><br>
+            <button id="checkIfPolygonContainPoint">check If Polygon Contain Point</button><br><br>
             <textarea class="jsonDesignField" rows="8" cols="50">{
 }</textarea><br>
-            <button id="setJsonDesignBtn">!!!! !!!!! !-JSON</button>
+            <button id="setJsonDesignBtn">set geometry design by JSON</button>
         </div>
         <div id="editPanel">
-            <h3>!!!!! !!!!!!!!</h3>
-            <button id="completeEditBtn">!!!ם</button>
-            <button id="cancelEditBtn">!!!</button>
+            <h3>edit geometry</h3>
+            <button id="completeEditBtn">complete</button>
+            <button id="cancelEditBtn">cancel</button>
         </div>
         <div id="dragPanel">
-            <h3>!!!!! !!!!!!!!</h3>
-            <button id="completeDragBtn">!!!ם</button>
-            <button id="cancelDragBtn">!!!</button>
+            <h3>drag geometry</h3>
+            <button id="completeDragBtn">complete</button>
+            <button id="cancelDragBtn">cancel</button>
         </div>
-        <h3>!!!!</h3>
-        <button id="drawPointBtn">!!!! !!!!!</button>
-        <button id="drawLineBtn">!!!! !!</button>
-        <button id="drawArrowBtn">!!!! !!</button>
-        <button id="drawPolygonBtn">!!!! !!!!!!!</button>
-        <button id="drawDoubleLineBtn">!!!! !! !!!!</button>
-        <button id="drawRectangleBtn">!!!! !!!!</button>
+        <h3>draw shapes</h3>
+        <button id="drawPointBtn">Point</button>
+        <button id="drawLineBtn">Line</button>
+        <button id="drawArrowBtn">Arrow</button>
+        <button id="drawPolygonBtn">Polygon</button>
+        <button id="drawDoubleLineBtn">Double Line</button>
+        <button id="drawRectangleBtn">Rectangle</button>
 
-        <h3>!!!!! !!!!</h3>
-        <button id="measureBtn">!!!!</button>
-        <button id="measureBtnStop">!!!! !!!!!</button>
+        <h3>Measuring</h3>
+        <button id="measureBtn">measure start</button>
+        <button id="measureBtnStop">measure end</button>
 
         <div id="addWktPanel">
-            <h3>!!!!!</h3>
+            <h3>add wkt</h3>
             <textarea class="wktField" rows="3" cols="50"></textarea>
-            <br> !!!!:
-            <label><input type="radio" value="auto" name="geometryType" checked="checked">!!!!!!!</label>
-            <label><input type="radio" value="POINT" name="geometryType">!!!!!</label>
-            <label><input type="radio" value="LINE" name="geometryType">!!</label>
-            <label><input type="radio" value="ARROW" name="geometryType">!!</label>
-            <label><input type="radio" value="POLYGON" name="geometryType">!!!!!!!</label>
-            <label><input type="radio" value="DOUBLE_LINE" name="geometryType">!! !!!!</label>
-            <br> !!!!!:
+            <br> shape type:
+            <label><input type="radio" value="auto" name="geometryType" checked="checked">auto</label>
+            <label><input type="radio" value="POINT" name="geometryType">point</label>
+            <label><input type="radio" value="LINE" name="geometryType">line</label>
+            <label><input type="radio" value="ARROW" name="geometryType">arrow</label>
+            <label><input type="radio" value="POLYGON" name="geometryType">polygon</label>
+            <label><input type="radio" value="DOUBLE_LINE" name="geometryType">double line</label>
+            <br> format:
             <label dir="rtl"><input type="radio" value="geojson" name="geometryFormat" checked="checked">GeoJSON</label>
             <label dir="rtl"><input type="radio" value="wkt" name="geometryFormat">WKT</label>&nbsp;&nbsp;
             <button class="addGeometryBtn">!!!! !!!!</button>
         </div>
         <div id="layersPanel">
-            <h3>!!!!!</h3>
-            !!!!!!!!! !!!!! !!!!!!! !! !!!!! !!!!!! (!!!! !!!!! !!!! !!!!! !!!!! ctrl).<br> !!!! !!!!!! !!!!! !!!!!/!!!!! !! !!!!!.<br>
+            <h3>Layers</h3>
+            !!!!!!!!! !!!!! !!!!!!! !! !!!!! !!!!!! (!!!! !!!!! !!!! !!!!! !!!!! ctrl).<br> !!!! !!!!!! !!!!!
+            !!!!!/!!!!! !! !!!!!.<br>
             <div class="layer selected" data-name="map">
-                <div class="title">!!!</div>
+                <div class="title">main</div>
             </div>
             <div class="layer" data-name="layer1">
                 <input type="checkbox" class="layerCb">
-                <div class="title">!!!! 1</div>
+                <div class="title">layer 1</div>
             </div>
             <div class="layer" data-name="layer2">
                 <input type="checkbox" class="layerCb">
-                <div class="title">!!!! 2</div>
+                <div class="title">layer 2</div>
             </div>
-            <button class="addRandomShapesBtn">!!!! !!! !!!!!!!!ם</button>
-            <button class="addRandomPointsBtn">!!!! !!! !!!!!!</button>
+            <button class="addRandomShapesBtn">add random shapes</button>
+            <button class="addRandomPointsBtn">add random points</button>
         </div>
         <div id="controlMapPanel">
-            <h2>!!!!! !!!!</h2>
-            <button class="goHomeBtn">!!! !!!!!</button>
-            <button class="printMapBoundsBtn">!!! !!!!!! !!!</button>
-            <button class="printMapCenterBtn">!!! !!!! !!!</button><br/>
-            <br/>
+            <h2>control map</h2>
+            <button class="goHomeBtn">go home</button>
+            <button class="printMapBoundsBtn">print map bounds</button>
+            <button class="printMapCenterBtn">print map center</button><br />
+            <br />
             <input type="text" class="zoom" />
-            <button class="setZoomBtn">!!! !!ם</button><br/>
-            <br/>
+            <button class="setZoomBtn">set zoom</button><br />
+            <br />
             <input type="text" class="heading" />
-            <button class="rotateMapBtn">!!!! !!!</button>
-            <button class="printMapRotationBtn">!!! !!!!! !!!</button><br/>
-            <br/>
+            <button class="rotateMapBtn">rotate map</button>
+            <button class="printMapRotationBtn">print map heading</button><br />
+            <br />
         </div>
         <div id="eventsPanel">
-            <h3>!!!!!!ם</h3>
-            <button class="addMapClickListenerBtn">!!!!! !! !!!!</button>
-            <button class="addRightClickListenerBtn">!!!!ם !!!!! !!!! !! !!!</button>
-            <button class="addZoomChangeEventBtn">!!!!ם !!!!!!!ם !!!ם</button>
-            <button class="addViewChangeEventBtn">!!!!ם !!!!!!!ם !!!!!!</button>
-            <button class="orientMapNorthBtn">!!!!ם !!!!!!! !!!!!</button>
-            <br/>
-            <button id="pickEntity">!!!!! !!!!!</button>
-            <button id="pickEntities">!!!!! !!!!!!! !!!!!!</button>
-            <button id="compareEntityAmount">!!!!!! !!!! !!!!!!</button>
+            <h3>events</h3>
+            <button class="addMapClickListenerBtn">register click</button>
+            <button class="addRightClickListenerBtn">register right click</button>
+            <button class="addZoomChangeEventBtn">register zoom change</button>
+            <button class="addViewChangeEventBtn">register view change</button>
+            <button class="orientMapNorthBtn">orient north</button>
+            <br />
+            <button id="pickEntity">choose entity</button>
+            <button id="pickEntities">choose entities</button>
+            <button id="compareEntityAmount">compare entity anount</button>
             <input id="compareWithInput">
         </div>
 
         <div id="geodesyPanel">
-            <h2>!!!!!!!!!</h2>
-            <h4>!!!!</h4>
+            <h2>geodesy</h2>
+            <h4>conver from</h4>
             <select id="selectFrom">
                 <option value="WGS84GEO">WGS84 Geo</option>
                 <option value="PROJDUTMIII">PROJD III UTM</option>
@@ -174,8 +179,8 @@
                 <option value="S">Seconds</option>
                 <option value="DMS">DMS</option>
             </select>
-            <input id="selectGeoZone" placeholder="!!!" type="number">
-            <h4>!!!</h4>
+            <input id="selectGeoZone" placeholder="36" type="number">
+            <h4>convert to</h4>
             <select id="selectTo">
                 <option value="WGS84GEO">WGS84 Geo</option>
                 <option value="PROJDUTMIII">PROJD III UTM</option>
@@ -194,35 +199,35 @@
                 <option value="S">Seconds</option>
                 <option value="DMS">DMS</option>
             </select>
-            <h4>!!!!!!!!!</h4>
+            <h4>coordinate: </h4>
             <input class="lat" placeholder="Latitude" />
-            <input class="lon" placeholder="Longitude" /><br/><br/>
-            <button id="convertBtn">!!!</button>
+            <input class="lon" placeholder="Longitude" /><br /><br />
+            <button id="convertBtn">convert</button>
             <label id="errorOutput"></label>
         </div>
         <div id="loadKMLPanel">
             <h2>!!! KML</h2>
             <textarea id="KMLText">insert your KML here</textarea>
-            <br/>
-            <input type="file" id="kmlFileInput" name="kmlFile"/>
-            <br/>
+            <br />
+            <input type="file" id="kmlFileInput" name="kmlFile" />
+            <br />
             <button id="loadKMLBtn">!!!</button>
             <button id="removeKMLBtn">!!!</button>
         </div>
         <div id="changeDimPanel">
-            <h2>!!! !!!!</h2>
+            <h2>change dimention</h2>
             <button id="changeDimBtn">!!!</button>
         </div>
-        <h2>!!!!! !!!!!</h2>
+        <h2>add image</h2>
         <div id="addImageRasterPanel">
-            <button id="addImageRaster">!!!! !!!! !! !!!!!</button>
+            <button id="addImageRaster">add image raster</button>
         </div>
-        <h2>!!!!! !!!!ם</h2>
+        <h2>rasters</h2>
         <div id="rastersPanel">
-            <button id="addRaster">!!!! !!!</button>
-            <button id="removeRaster">!!! !!!</button>
+            <button id="addRaster">add raster</button>
+            <button id="removeRaster">remove raster</button>
         </div>
-        <h2>!!!!! !!!!!!ם</h2>
+        <h2>vectors</h2>
         <div id="vectorsPanel">
         </div>
     </div>

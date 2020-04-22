@@ -20,6 +20,8 @@ import { LinePatternFactory } from "../GeometryDesign/LinePattern/LinePatternFac
 import { LinePatternName } from "../GeometryDesign/Enums/LinePatternName";
 
 export abstract class Arrow extends Line {
+	protected mainLinesCoordinates: Coordinate[][];
+	protected arrowHeadsCoordinates: Coordinate[][];
 
 	protected get design(): ArrowGeometryDesign {
 		if (this._design === null) {
@@ -40,65 +42,46 @@ export abstract class Arrow extends Line {
 
 	protected applyTransformations(): void {
 		this.transformedCoordinates = this.baseCoordinates;
-		this.multilineCoordsDraft = null;
+		this.multilineCoordsDraft = [];
 		this.multipolygonCoordsDraft = null;
 
 		if (this.design.line.smoothing === SmoothingType.Smooth) {
 			this.transformToSmooth();
 		}
 
-		let arrowHeads: Coordinate[][] = [];
+		this.arrowHeadsCoordinates = [];
+		this.mainLinesCoordinates = [];
+
 		const linePatternObj = LinePatternFactory.getPatternObject(this.design.line.pattern);
 		switch (this.design.arrow.type) {
 			case ArrowType.Regular:
-				arrowHeads.push(this.createRegularArrowHead());
+				this.mainLinesCoordinates.push(this.transformedCoordinates);
+				this.arrowHeadsCoordinates.push(this.createRegularArrowHead());
 				if (this.design.arrow.isDouble) {
-					arrowHeads.push(this.createRegularArrowHead(true));
+					this.arrowHeadsCoordinates.push(this.createRegularArrowHead(true));
 				}
-				if (this.design.line.pattern !== LinePatternName.Solid) {
-					linePatternObj.applyToGeometry(this, this.transformedCoordinates);
-				} else {
-					this.multilineCoordsDraft = [this.transformedCoordinates];
-				}
-				arrowHeads.forEach(head => {
-					linePatternObj.applyToGeometry(this, head);
-				});
+
 				break;
 			case ArrowType.Wide:
 			case ArrowType.Expanded:
-				let arrowParts: {
-					line1: Coordinate[];
-					line2: Coordinate[];
-					head: Coordinate[];
-				};
-				if (this.design.arrow.type === ArrowType.Wide) {
-					arrowParts = this.createComplexArrow(
-						false,
-						this.design.arrow.gap ? this.design.arrow.gap : 0.5
-					);
-				} else {
-					arrowParts = this.createComplexArrow(
-						true,
-						this.design.arrow.gap ? this.design.arrow.gap : 0.5
-					);
-				}
-				arrowHeads.push(arrowParts.head);
-				linePatternObj.applyToGeometry(this, arrowParts.line1);
-				linePatternObj.applyToGeometry(this, arrowParts.line2);
-				if (
-					this.multilineCoordsDraft === null &&
-					this.multipolygonCoordsDraft === null
-				) {
-					this.multilineCoordsDraft = [];
-					this.multilineCoordsDraft.push(arrowParts.line1);
-					this.multilineCoordsDraft.push(arrowParts.line2);
-				}
+				const isExpanded = this.design.arrow.type === ArrowType.Expanded;
+				const arrowParts = this.createComplexArrow(
+					isExpanded,
+					this.design.arrow.gap ? this.design.arrow.gap : 0.5
+				);
+				this.arrowHeadsCoordinates.push(arrowParts.head);
+				this.mainLinesCoordinates.push(arrowParts.line1);
+				this.mainLinesCoordinates.push(arrowParts.line2);
 				break;
 		}
-		if (this.multilineCoordsDraft === null) {
-			this.multilineCoordsDraft = [];
+		if (this.design.line.pattern !== LinePatternName.Solid) {
+			this.mainLinesCoordinates.forEach(line =>
+				linePatternObj.applyToGeometry(this, line));
+		} else {
+			this.multilineCoordsDraft.push(...this.mainLinesCoordinates);
 		}
-		this.multilineCoordsDraft.push(...arrowHeads);
+
+		this.multilineCoordsDraft.push(...this.arrowHeadsCoordinates);
 	}
 
 	private createRegularArrowHead(
@@ -160,18 +143,18 @@ export abstract class Arrow extends Line {
 		isExpanded: boolean,
 		arrowWidthInMeters: number,
 		stepsInCreatingArrow: number = 6.0
-	): { line1: Coordinate[]; line2: Coordinate[]; head: Coordinate[] } {
+	): { line1: Coordinate[]; line2: Coordinate[]; head: Coordinate[]; } {
 		let arrowWidthInKilometers = arrowWidthInMeters / 1000.0;
 		let result: {
 			line1: Coordinate[];
 			line2: Coordinate[];
 			head: Coordinate[];
-		} = {line1: [], line2: [], head: []};
+		} = { line1: [], line2: [], head: [] };
 		stepsInCreatingArrow *= this.transformedCoordinates.length;
 		let clockwiseCoords = [];
 		let counterClockwiseCoords = [];
-		let geoJson = {type: "LineString", geometry: {coordinates: []}};
-		for (let i = 0; i < this.transformedCoordinates.length; i++) {
+		let geoJson = { type: "LineString", geometry: { coordinates: [] } };
+		for (let i = 0;i < this.transformedCoordinates.length;i++) {
 			geoJson.geometry.coordinates.push([
 				this.transformedCoordinates[i].latitude,
 				this.transformedCoordinates[i].longitude
@@ -180,7 +163,7 @@ export abstract class Arrow extends Line {
 		const initialCoords = geoJson.geometry.coordinates;
 
 		let turfLine = turf.lineString(initialCoords);
-		let distance = lineDistance(turfLine, {units: "kilometers"});
+		let distance = lineDistance(turfLine, { units: "kilometers" });
 		let sizeOfStep = 0.0001;
 		if (distance > arrowWidthInKilometers) {
 			turfLine = lineSlice(
@@ -188,15 +171,15 @@ export abstract class Arrow extends Line {
 				along(turfLine, distance - arrowWidthInKilometers),
 				turfLine
 			);
-			distance = lineDistance(turfLine, {units: "kilometers"});
+			distance = lineDistance(turfLine, { units: "kilometers" });
 			sizeOfStep = distance / stepsInCreatingArrow;
 		} else {
 			stepsInCreatingArrow = 1;
 		}
 
-		for (let i = 1; i <= stepsInCreatingArrow; i++) {
-			let point1 = along(turfLine, sizeOfStep * (i - 1), {units: "kilometers"});
-			let point2 = along(turfLine, sizeOfStep * i, {units: "kilometers"});
+		for (let i = 1;i <= stepsInCreatingArrow;i++) {
+			let point1 = along(turfLine, sizeOfStep * (i - 1), { units: "kilometers" });
+			let point2 = along(turfLine, sizeOfStep * i, { units: "kilometers" });
 
 			let bearing = turfBearing(point1, point2);
 
@@ -365,7 +348,7 @@ export abstract class Arrow extends Line {
 			(design.line !== undefined &&
 				(design.line.pattern !== undefined ||
 					design.line.smoothing !== undefined)) ||
-			(design.arrow !== undefined && design.arrow.type !== undefined)
+			(design.arrow !== undefined)
 		) {
 			//if the geometry doesn't exist yet or needs to be updated, call the generate function
 			this.generateGeometryOnMap();
