@@ -16,9 +16,11 @@ import { MapBoxGeometryBuilder } from "./Geometries/MapBoxGeometryBuilder";
 import { MapBoxGeometryDrawing } from "./Geometries/DrawEditDrag/MapBoxGeometryDrawing";
 import { MapBoxGeometryUtils } from "./Geometries/MapBoxGeometryUtils";
 import { MapBoxGeometryDragEdit } from "./Geometries/DrawEditDrag/MapBoxGeometryDragEdit";
+import { MapBoxStyle } from "./MapBoxStyle";
 import * as mapboxgl from "mapbox-gl";
 import * as mapboxgl_rtl_text from "@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.min.js";
 import "mapbox-gl/dist/mapbox-gl.css";
+
 
 export class MapBoxComponent extends MapComponent {
 	private readonly FLY_DURATION = 1500;
@@ -141,7 +143,7 @@ export class MapBoxComponent extends MapComponent {
 			maxZoom: 20,
 			center: [this.config.center.longitude, this.config.center.latitude],
 			zoom: this.config.zoom,
-			style: MapBoxWmsProvider.getWmsStyle(this.config.baseWmsUrl,
+			style: MapBoxStyle.getWmsStyle(this.config.baseWmsUrl,
 				[this.config.wmsLayers], "main-layer")
 		};
 		mapboxgl.setRTLTextPlugin(mapboxgl_rtl_text, null, false);
