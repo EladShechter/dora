@@ -10,7 +10,6 @@ import { MapType } from "../../MapType";
 import { MapBoxConfig } from "./MapBoxConfig";
 import { IMapBoxConfig } from "./IMapBoxConfig";
 import { MapBoxUtilties } from "./MapBoxUtilities";
-import { MapBoxWmsProvider } from "./MapBoxWmsProvider";
 import { MapUtils } from "../MapUtils/MapUtils";
 import { MapBoxGeometryBuilder } from "./Geometries/MapBoxGeometryBuilder";
 import { MapBoxGeometryDrawing } from "./Geometries/DrawEditDrag/MapBoxGeometryDrawing";
@@ -20,6 +19,7 @@ import { MapBoxStyle } from "./MapBoxStyle";
 import * as mapboxgl from "mapbox-gl";
 import * as mapboxgl_rtl_text from "@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.min.js";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Mapbox3DTiles } from "./Mapbox3DTiles";
 
 
 export class MapBoxComponent extends MapComponent {
@@ -131,9 +131,32 @@ export class MapBoxComponent extends MapComponent {
 			},
 			remove: async () => {
 				this.map.removeLayer(layerId);
+				this.map.removeSource(sourceId);
 			}
 		};
 		return raster;
+	}
+
+	public create3DTilesLayer(url: string): IBaseLayer {
+		let layerId: string;
+		const threeDLayer: IBaseLayer = {
+			name: "3D-Layer",
+			isSelected: false,
+			addToMap: async () => {
+				layerId = MapUtils.generateGuid();
+				this.map.addLayer(new Mapbox3DTiles.Layer({
+					id: layerId,
+					url,
+					color: 0xff0000,
+					opacity: 1
+				}));
+			},
+			remove: async () => {
+				this.map.removeLayer(layerId);
+			}
+		};
+
+		return threeDLayer;
 	}
 
 	public async load(): Promise<void> {
@@ -145,7 +168,9 @@ export class MapBoxComponent extends MapComponent {
 			zoom: this.config.zoom,
 			style: MapBoxStyle.getWmsStyle(this.config.baseWmsUrl,
 				[this.config.wmsLayers], "main-layer")
+			// style: "mapbox://styles/mapbox/light-v10?optimize=true"
 		};
+		// (mapboxgl as any).accessToken = "pk.eyJ1IjoiZWxhZC1zaGVjaHRlciIsImEiOiJjazd2a3dla24xOWdiM2VuMTRicnM0dGt6In0.ryRmPDkEFHEfMcuPHJQGlQ";
 		mapboxgl.setRTLTextPlugin(mapboxgl_rtl_text, null, false);
 		this.map = new mapboxgl.Map(mapOptions);
 

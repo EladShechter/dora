@@ -63,6 +63,7 @@
         "path": "^0.12.7",
         "polylabel": "^1.0.2",
         "proj4": "2.0.3",
+        "three": "^0.115.0",
         "underscore": "^1.8.3",
         "victor": "^1.1.0",
         "wellknown": "^0.5.0"

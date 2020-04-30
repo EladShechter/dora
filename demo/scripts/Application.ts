@@ -31,7 +31,8 @@ import { MapUtils } from "../../app/src/modules/map/MapUtils/MapUtils";
 import { IconRelativePosition } from "../../app/src/modules/map/GeometryDesign/Enums/IconRelativePosition";
 import { LabelRelativePosition } from "../../app/src/modules/map/GeometryDesign/Enums/LabelRelativePosition";
 import { MapType } from "../../app/src/modules/MapType";
-import { LinePatternName } from "../../app/src/dora-common";
+import { LinePatternName, IBaseLayer } from "../../app/src/dora-common";
+import { MapBoxComponent } from "../../app/src/dora-mapbox";
 
 export class Application {
 	protected selectedGeometry: IGeometry = null;
@@ -267,6 +268,16 @@ export class Application {
 			const layer = this.mapComponent.createRasterFromImage("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABWAgMAAAHR5fCOAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJUExURf9GNZn/bQAAAObEC80AAAADdFJOU4CAACDARxUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIqSURBVDjLpVQ7boQwEJ1FSUMdcog9BRtpeyfyUHAETsEVUrjfhgKfMp6Pv2yUTWIJRo/n+c8A3vsVvAuv3fQrbLZbwSHQ67rCJ2L4Jq+PcAXnVTW8B48eNtODGztwNjw4hAfDM9H1cHuRe3yCzo5jRxItwJmsoYGO7WOU6g9xYh7ZoQtyIZ9BiO8YQyPRstxw7DkrBGB/JvoD6Nn+qNKSX6f+SV4mkVjIrZQz2xk4LsJnleIXJ/9TnHJugsL9hCjdUB9BDEK0gkIkFwjnTEgpgI4QBTUyPN+kUldm+5vERTky2gUR+ZoRZdYin9FcoUX9ZaSKI144zqSWcuDSSH6iueTciUmorsvjKPjKKJg0CclYRSSZf1fdMBhEag5Szgr1sfLchz5W/pr6QEZOfDUiNZMqWKOxQqbqUdMxgKc5I/OMc9WxH9Hw4M2m05zDHRRzx2cK1eeZGJErEY3avpqJJdWajTBSxSn3iCJR5PRi7i33WtCO/5ue6vyPcZpCy6SF6xsm9xWgZuQ7DQPw5CbGZY1EMbMVGvKHiAw2TBcZdW9OiYqMxmWGSqnYZCMTHpVyB/F6smUMRaffUTeB96ZkeEiyo2JWymThyNiC2R5khKIxPDB6/s5cvmF2yb45Xhi8z/jfMXPVhTqAsqdoEmG127kNL+ML/yNelWlqOiA1rpydfN7SvLljZHF6D8kkZjuqxF1wByJtVtaa2m3cao16g/e7e3o8v2e8/wLZZL0rcOgiuAAAAABJRU5ErkJggg==",
 				new ViewBounds(31.7472222222222, 31.7392592592593, 34.8263888888889, 34.8355555555556));
 			await layer.addToMap();
+		});
+
+		let threeDLayer: IBaseLayer;
+		$("#add3DLayer").on("click", async () => {
+			const map = this.mapComponent as MapBoxComponent;
+			threeDLayer = map.create3DTilesLayer("https://saturnus.geodan.nl/maquette_nl/data/buildingtiles_velsen_3857/tileset.json");
+			threeDLayer.addToMap();
+		});
+		$("#remove3DLayer").on("click", async () => {
+			threeDLayer.remove();
 		});
 
 		$("#measureBtn").on("click", () => {
