@@ -5,4 +5,5 @@ export interface IMapBoxConfig extends IMapConfig {
 	baseWmsUrl?: string;
 	wmsLayers?: string;
 	zoom?: number;
+	is2D?: boolean;
 }

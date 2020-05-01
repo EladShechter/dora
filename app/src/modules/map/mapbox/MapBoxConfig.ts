@@ -7,5 +7,6 @@ export class MapBoxConfig extends MapConfig implements IMapBoxConfig {
 	public zoom: number = 7;
 	public baseWmsUrl: string = "https://www.gebco.net/data_and_products/gebco_web_services/2019/mapserv";
 	public wmsLayers: string = "GEBCO_2019";
+	public is2D: boolean = true;
 
 }

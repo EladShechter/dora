@@ -24,6 +24,8 @@ import { Mapbox3DTiles } from "./Mapbox3DTiles";
 
 export class MapBoxComponent extends MapComponent {
 	private readonly FLY_DURATION = 1500;
+	private readonly TERRAIN_LAYER_ID = "hillshading";
+	private _is2d = true;
 
 	public geometryUtils: MapBoxGeometryUtils;
 	public geometryDragging: MapBoxGeometryDragEdit;
@@ -99,6 +101,7 @@ export class MapBoxComponent extends MapComponent {
 		if (typeof config !== "undefined") {
 			this.config.update(config);
 			this.useCluster = this.config.useCluster;
+			this._is2d = this.config.is2D || this._is2d;
 		}
 	}
 
@@ -166,11 +169,11 @@ export class MapBoxComponent extends MapComponent {
 			maxZoom: 20,
 			center: [this.config.center.longitude, this.config.center.latitude],
 			zoom: this.config.zoom,
-			style: MapBoxStyle.getWmsStyle(this.config.baseWmsUrl,
-				[this.config.wmsLayers], "main-layer")
-			// style: "mapbox://styles/mapbox/light-v10?optimize=true"
+			// style: MapBoxStyle.getWmsStyle(this.config.baseWmsUrl,
+			// 	[this.config.wmsLayers], "main-layer")
+			style: "mapbox://styles/mapbox/cjaudgl840gn32rnrepcb9b9g"
 		};
-		// (mapboxgl as any).accessToken = "pk.eyJ1IjoiZWxhZC1zaGVjaHRlciIsImEiOiJjazd2a3dla24xOWdiM2VuMTRicnM0dGt6In0.ryRmPDkEFHEfMcuPHJQGlQ";
+		(mapboxgl as any).accessToken = "pk.eyJ1IjoiZWxhZC1zaGVjaHRlciIsImEiOiJjazd2a3dla24xOWdiM2VuMTRicnM0dGt6In0.ryRmPDkEFHEfMcuPHJQGlQ";
 		mapboxgl.setRTLTextPlugin(mapboxgl_rtl_text, null, false);
 		this.map = new mapboxgl.Map(mapOptions);
 
@@ -186,6 +189,9 @@ export class MapBoxComponent extends MapComponent {
 
 		return new Promise<void>(resolve => {
 			this.map.once("load", () => {
+				if (!this._is2d) {
+					this.addTerrainLayer();
+				}
 				resolve();
 			});
 		});
@@ -307,12 +313,46 @@ export class MapBoxComponent extends MapComponent {
 
 	// TODO: Not implemented | TODO: more valuable name ?
 	public changeDimension() {
-		throw Error("Method not implemented.");
+		this._is2d = !this._is2d;
+		if (!this._is2d) {
+			this.addTerrainLayer();
+		} else {
+			this.map.removeLayer(this.TERRAIN_LAYER_ID);
+		}
+	}
+
+	private addTerrainLayer() {
+		const id = this.TERRAIN_LAYER_ID;
+		let source = this.map.getSource(id);
+		if (!source) {
+			source = {
+				type: "raster-dem",
+				url: "mapbox://mapbox.terrain-rgb"
+			};
+			this.map.addSource(id, source);
+		}
+		const layer: mapboxgl.Layer = {
+			id,
+			source: id,
+			type: "hillshade",
+			paint: {
+				"hillshade-exaggeration": 1
+			}
+		};
+		this.map.addLayer(layer);
+
+		// this.geometryUtils.applyAfterLayerAdded(layer).then(() => {
+		// 	let degree = 335;
+		// 	setInterval(() => {
+		// 		degree = (degree + 1) % 360;
+		// 		this.map.setPaintProperty(id, "hillshade-illumination-direction", degree);
+		// 	}, 50);
+		// });
 	}
 
 	// TODO: Not implemented | TODO: more valuable name ?
 	public getIs2D(): boolean {
-		return true;
+		return this._is2d;
 	}
 
 	public orientMapNorth(tilt: boolean = false, flyDuration: number = this.FLY_DURATION): void {

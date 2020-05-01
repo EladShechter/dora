@@ -305,7 +305,8 @@ export class MapBoxArrow extends Arrow {
 				"icon-image": arrowImage,
 				"icon-anchor": (this.design.arrow.type === ArrowType.Regular) ? "top" : "bottom",
 				"icon-rotate": ["get", "bearing"],
-				"icon-allow-overlap": true
+				"icon-allow-overlap": true,
+				"icon-rotation-alignment": "map"
 			}
 		};
 
