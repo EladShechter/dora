@@ -10,6 +10,7 @@ export type IconImage = `https://${string}` | `http://${string}` | `data:image/p
 export type PositionRelativeToGeometry = 'top' | 'bottom' | 'center' | 'left' | 'right' | 'centroid' | 'first-point';
 
 export type PositionRelativeToIcon = 'top' | 'bottom' | 'left' | 'right';
+type Size = number | 'small' | 'medium' | 'large';
 
 /**
  * Prefix all keys in T with "<prefix>-".
@@ -28,11 +29,10 @@ export type StrokeDesign = {
 export type LabelDesign = {
 	'label-text'?: string;
 	'label-opacity'?: number;
-	'label-font-size'?: number;
+	'label-font-size'?: Size;
 	'label-font-color'?: string;
 	'label-background-color'?: string;
 	'label-origin'?: IconOrigin;
-	'label-position'?: PositionRelativeToGeometry;
 	'label-icon-relative-position'?: PositionRelativeToIcon;
 };
 
@@ -41,35 +41,31 @@ export type LabelDesign = {
  * Discriminated by symbol-type = 'icon'
  */
 export type IconDesign = {
-	'symbol-type': 'icon';
-	'icon-image'?: IconImage;
-	'icon-opacity'?: number;
-	'icon-width'?: number;
-	'icon-height'?: number;
-	'icon-angle'?: number;
-	'icon-origin'?: IconOrigin;
+	'symbol-type': 'custom';
+	'symbol-custom-image'?: IconImage;
+	'symbol-custom-opacity'?: number;
+	'symbol-custom-width'?: number;
+	'symbol-custom-height'?: number;
+	'symbol-custom-angle'?: number;
+	'symbol-custom-origin'?: IconOrigin;
 };
 
 /**
  * Built-in point/marker symbol.
- * Discriminated by symbol-type = 'point' | 'marker'
+ * Discriminated by symbol-type = 'point' | 'pin'
  */
-export type SymbolDesign = {
-	'symbol-type': 'point' | 'marker';
-	'symbol-size'?: number;
-	'symbol-color'?: string;
-	'symbol-opacity'?: number;
-	'symbol-outline-color'?: string;
-	'symbol-outline-opacity'?: number;
-	'symbol-outline-width'?: number;
+export type MarkerDesign = {
+	'symbol-type': 'point' | 'pin';
+	'symbol-marker-size'?: number;
+	'symbol-marker-color'?: string;
+	'symbol-marker-opacity'?: number;
+	'symbol-marker-outline-color'?: string;
+	'symbol-marker-outline-opacity'?: number;
+	'symbol-marker-outline-width'?: number;
 };
 
-/**
- * Adds optional relative position for a symbol/icon placed on a geometry.
- */
-export type Positioned<T> = T & {
-	'symbol-position'?: PositionRelativeToGeometry;
-};
+export type SymbolDesign = (IconDesign | MarkerDesign);
+
 
 /**
  * PointDesign: (icon OR symbol) + optional positioning.
@@ -77,7 +73,14 @@ export type Positioned<T> = T & {
  * - actual Point geometries (unprefixed)
  * - symbols/icons embedded in polygon/line (prefixed)
  */
-export type PointDesign = Positioned<IconDesign | SymbolDesign>;
+export type SymbolAndLabelForGeometryDesign =
+	& {
+		'symbol-position'?: PositionRelativeToGeometry;
+		'symbol-show'?: boolean;
+		'label-position'?: PositionRelativeToGeometry;
+	}
+	& SymbolDesign
+	& LabelDesign;
 
 export type PolygonDesign =
 	& {
@@ -86,20 +89,24 @@ export type PolygonDesign =
 		'polygon-fill-opacity'?: number;
 	}
 	& PrefixKeys<StrokeDesign, 'polygon-outline'>
-	& PrefixKeys<PointDesign, 'polygon'>
-	& PrefixKeys<LabelDesign, 'polygon'>;
+	& PrefixKeys<SymbolAndLabelForGeometryDesign, 'polygon'>;
 
 export type LineDesign =
 	& PrefixKeys<StrokeDesign, 'line'>
-	& PrefixKeys<PointDesign, 'line'>
-	& PrefixKeys<LabelDesign, 'line'>;
+	& PrefixKeys<SymbolAndLabelForGeometryDesign, 'line'>;
+
+export type PointDesign =
+	& PrefixKeys<SymbolDesign, 'point'>
+	& PrefixKeys<LabelDesign, 'point'>;
 
 export type GeometryDesign =
 	& { 'base-color'?: string }
+	& PrefixKeys<SymbolDesign, 'base'>
+	& PrefixKeys<LabelDesign, 'base'>
 	& PolygonDesign
 	& LineDesign
 	& PointDesign
-	& LabelDesign;
+;
 
 /**
  * Example defaults
@@ -114,10 +121,10 @@ export const defaultGeometryDesign: GeometryDesign = {
 	'polygon-outline-width': 1,
 
 	// Symbol/icon embedded in polygon (positioned relative to polygon)
-	'polygon-symbol-type': 'marker',
+	'polygon-symbol-type': 'point',
 	'polygon-symbol-position': 'center',
-	'polygon-symbol-size': 10,
-	'polygon-symbol-color': '#41DDCE',
+	'polygon-symbol-marker-size': 10,
+	'polygon-symbol-marker-color': '#41DDCE',
 
 	// Label embedded in polygon (positioned relative to polygon)
 	'polygon-label-position': 'center',
@@ -130,21 +137,22 @@ export const defaultGeometryDesign: GeometryDesign = {
 	// Symbol/icon embedded in line (positioned relative to line)
 	'line-symbol-type': 'point',
 	'line-symbol-position': 'center',
-	'line-symbol-size': 6,
-	'line-symbol-color': '#41DDCE',
+	'line-symbol-marker-size': 6,
+	'line-symbol-marker-color': '#41DDCE',
 
 	// Label embedded in line (positioned relative to line)
 	'line-label-position': 'center',
 
-	// Point geometry itself (center-anchored; symbol-position typically ignored)
-	'symbol-type': 'point',
-	'symbol-size': 6,
-	'symbol-color': '#41DDCE',
-	'symbol-opacity': 1,
-	'symbol-outline-color': 'black',
-	'symbol-outline-opacity': 1,
-	'symbol-outline-width': 1,
+	// Point geometry itself
+	'point-symbol-type': 'point',
+	'point-symbol-marker-size': 6,
+	'point-symbol-marker-color': '#41DDCE',
+	'point-symbol-marker-opacity': 1,
+	'point-symbol-marker-outline-color': 'black',
+	'point-symbol-marker-outline-opacity': 1,
+	'point-symbol-marker-outline-width': 1,
 
 	// Point label
-	'label-position': 'top',
+	'point-label-position': 'top',
+	'base-label-position': 'top',
 };
